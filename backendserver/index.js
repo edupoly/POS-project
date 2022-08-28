@@ -14,25 +14,10 @@ server.use(middlewares)
 server.use(cors())
 server.use(jsonServer.bodyParser)
 const jwt = require('jsonwebtoken');
-var users = [
-    {
-        username:'praveen',
-        password:'123',
-        userId:12
-    },
-    {
-        username:'prateek',
-        password:'222',
-        userId:47
-    },
-    {
-        username:'alok',
-        password:'333',
-        userId:17
-    },
-]
 server.post("/login",function(req,res){
     console.log(req.body)
+    var users = router.db.get("users").valueOf();
+    console.log(users)
     var s = users.find(function(a){
         if(a.username===req.body.username && a.password===req.body.password){
             return true
@@ -49,7 +34,7 @@ server.post("/login",function(req,res){
     }
 })
 function authenticate(req,res,next){
-    console.log("auth middleware called",req.headers)
+    //console.log("auth middleware called",req.headers)
     try{
         var isTokenValid = jwt.verify(req.headers.authorization.split(' ')[1],"some secret")
         next()
@@ -58,9 +43,7 @@ function authenticate(req,res,next){
         res.send({err:'token mismatched'})
     }
 }
-
 server.use(authenticate)
-
 server.use(router)
 server.listen(4000, () => {
   console.log('JSON Server is running on 4000')
